@@ -77,7 +77,8 @@ pub async fn login(
                 .cookie(token_cookie)
                 .body(res.text().await.unwrap())
         }
-        StatusCode::BAD_REQUEST => HttpResponse::BadRequest().body(res.text().await.unwrap()),
+        StatusCode::FORBIDDEN => HttpResponse::Forbidden().body(res.text().await.unwrap()),
+        StatusCode::NOT_FOUND => HttpResponse::NotFound().body(res.text().await.unwrap()),
         _ => HttpResponse::InternalServerError().body(res.text().await.unwrap()),
     }
 }

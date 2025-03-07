@@ -24,8 +24,8 @@ fn get_postgres_config() -> deadpool_postgres::Config {
 }
 
 pub fn get_config() -> UserServiceConfig {
-    let public_key = include_str!("../../cert/public.pem").to_string();
-    let private_key = include_str!("../../cert/private.pem").to_string();
+    let public_key = include_str!("../cert/public.pem").to_string();
+    let private_key = include_str!("../cert/private.pem").to_string();
     let token_duration = 3600;
 
     UserServiceConfig {

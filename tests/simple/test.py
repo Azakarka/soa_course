@@ -21,6 +21,8 @@ def test_json(name, res_json: dict):
 host = "0.0.0.0"
 port = "8081"
 
+print("TestSuite Simple")
+
 print("test register new user")
 add_user_json = get_json("register.json")
 add_user_json["username"] = add_user_json["username"] + str(random.randint(0, 1000000))

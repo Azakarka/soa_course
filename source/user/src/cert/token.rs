@@ -6,7 +6,7 @@ use jsonwebtoken::{
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::database::config::UserServiceConfig;
+use crate::config::UserServiceConfig;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims228 {

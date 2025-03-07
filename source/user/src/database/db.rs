@@ -1,9 +1,11 @@
-use actix_web::Error;
+use actix_web::{http::Error};
 use deadpool_postgres::Client;
 use tokio_pg_mapper::FromTokioPostgresRow;
 use uuid::Uuid;
 
 use super::schema::UserProfile;
+use crate::error::UserServiceError;
+
 
 pub async fn get_profile(client: &Client, uuid: Uuid) -> Result<UserProfile, Error> {
     let stmt = include_str!("../sql_queries/get_profile.pgsql");
@@ -22,26 +24,32 @@ pub async fn get_profile(client: &Client, uuid: Uuid) -> Result<UserProfile, Err
     Ok(results.unwrap())
 }
 
-pub async fn login_profile(client: &Client, user_info: UserProfile) -> Result<UserProfile, Error> {
+pub async fn login_profile(client: &Client, user_info: UserProfile) -> Result<UserProfile, UserServiceError> {
     let stmt = include_str!("../sql_queries/get_by_username.pgsql");
     let stmt = stmt.replace("$table_fields", &UserProfile::sql_table_fields());
     let stmt = client.prepare(&stmt).await.unwrap();
 
-    let results = client
+    let result_opt = client
         .query(&stmt, &[&user_info.username])
         .await
         .unwrap()
         .iter()
         .take(1)
         .map(|row| UserProfile::from_row_ref(row).unwrap())
-        .next()
-        .unwrap();
+        .next();
 
-    if results.password != user_info.password {
-        panic!("Not yet implemented");
+    let result = match result_opt {
+        Some(result_) => result_,
+        None => {
+            return Err(UserServiceError::UserNotExists(user_info.username.unwrap()))
+        }
+    };
+
+    if result.password != user_info.password {
+        return Err(UserServiceError::WrongPassword)
     }
 
-    Ok(results)
+    Ok(result)
 }
 
 pub async fn add_user(client: &Client, user_info: UserProfile) -> Result<UserProfile, Error> {
