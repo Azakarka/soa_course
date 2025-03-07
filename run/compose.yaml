@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:latest  # Рекомендуется указать конкретную версию, например postgres:13
+    restart: always
+    env_file: .env
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  proxy:
+    build:
+      context: ../source/proxy
+      dockerfile: Dockerfile
+    restart: always
+    env_file: .env
+    ports:
+      - 8081:8081
+
+  user:
+    build:
+      context: ../source/user
+      dockerfile: Dockerfile
+    restart: always
+    env_file: .env
+    ports:
+      - 8082:8082
+
+volumes:
+  pg_data:
