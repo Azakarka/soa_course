@@ -37,8 +37,8 @@ test_json("get_profile1.json", json.loads(resp.text))
 
 print("test update")
 new_profile_json = get_json("update.json")
-resp = requests.post(f"http://{host}:{port}/auth/profile", cookies={"jwt-token": token}, json=new_profile_json)
-assert(resp.status_code == 200)
+resp = requests.put(f"http://{host}:{port}/auth/profile", cookies={"jwt-token": token}, json=new_profile_json)
+assert resp.status_code == 200, resp.status_code
 test_json("update.json", json.loads(resp.text))
 
 print("test login")

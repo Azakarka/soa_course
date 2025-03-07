@@ -1,4 +1,4 @@
-use actix_web::{http::header::AUTHORIZATION, Error, ResponseError};
+use actix_web::Error;
 use deadpool_postgres::Client;
 use tokio_pg_mapper::FromTokioPostgresRow;
 use uuid::Uuid;
@@ -12,7 +12,8 @@ pub async fn get_profile(client: &Client, uuid: Uuid) -> Result<UserProfile, Err
 
     let results = client
         .query(&stmt, &[&uuid])
-        .await.unwrap()
+        .await
+        .unwrap()
         .iter()
         .take(1)
         .map(|row| UserProfile::from_row_ref(row).unwrap())
@@ -28,11 +29,13 @@ pub async fn login_profile(client: &Client, user_info: UserProfile) -> Result<Us
 
     let results = client
         .query(&stmt, &[&user_info.username])
-        .await.unwrap()
+        .await
+        .unwrap()
         .iter()
         .take(1)
         .map(|row| UserProfile::from_row_ref(row).unwrap())
-        .next().unwrap();
+        .next()
+        .unwrap();
 
     if results.password != user_info.password {
         panic!("Not yet implemented");
@@ -58,19 +61,24 @@ pub async fn add_user(client: &Client, user_info: UserProfile) -> Result<UserPro
                 &user_info.username,
                 &user_info.password,
                 &user_info.phone_number,
-                &user_info.birth_date
+                &user_info.birth_date,
             ],
         )
-        .await.unwrap()
+        .await
+        .unwrap()
         .iter()
         .take(1)
-        .map(|row| UserProfile::from_row_ref(row).unwrap()).next();
+        .map(|row| UserProfile::from_row_ref(row).unwrap())
+        .next();
     assert!(profiles.is_some());
     Ok(profiles.unwrap())
 }
 
-
-pub async fn update_user(client: &Client, user_info: UserProfile, uuid: Uuid) -> Result<UserProfile, Error> {
+pub async fn update_user(
+    client: &Client,
+    user_info: UserProfile,
+    uuid: Uuid,
+) -> Result<UserProfile, Error> {
     let _stmt = include_str!("../sql_queries/update_profile.pgsql");
     let _stmt = _stmt.replace("$table_fields", &UserProfile::sql_table_fields());
     println!("Stmt: {:?}", _stmt);
@@ -86,13 +94,15 @@ pub async fn update_user(client: &Client, user_info: UserProfile, uuid: Uuid) ->
                 &user_info.last_name,
                 &user_info.email,
                 &user_info.phone_number,
-                &user_info.birth_date
+                &user_info.birth_date,
             ],
         )
-        .await.unwrap()
+        .await
+        .unwrap()
         .iter()
         .take(1)
-        .map(|row| UserProfile::from_row_ref(row).unwrap()).next();
+        .map(|row| UserProfile::from_row_ref(row).unwrap())
+        .next();
     assert!(profiles.is_some());
     Ok(profiles.unwrap())
 }

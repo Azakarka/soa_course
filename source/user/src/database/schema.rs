@@ -16,5 +16,5 @@ pub struct UserProfile {
     pub phone_number: Option<String>,
     pub birth_date: Option<chrono::DateTime<Utc>>,
     pub created_at: Option<chrono::DateTime<Utc>>,
-    pub updated_at: Option<chrono::DateTime<Utc>>
+    pub updated_at: Option<chrono::DateTime<Utc>>,
 }

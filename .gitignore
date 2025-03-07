@@ -1,6 +1,6 @@
 source/proxy/target/*
 source/user/target/*
-source/user/cert/private.key
-source/user/cert/private.key.pub
+source/user/cert/private.pem
+source/user/cert/public.pem
 .DS_Store
 .vscode
