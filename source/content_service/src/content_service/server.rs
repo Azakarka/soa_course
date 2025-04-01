@@ -93,7 +93,7 @@ impl ContentService for ContentServiceInfo {
         let mut wallpost = WallPostPostgres::default();
         wallpost.creator_id = Uuid::from_str(&request.creator_id).unwrap();
 
-        let res_vec: Vec<WallPostPostgres> = database::db::get_posts(&self.pool.get().await.unwrap(), wallpost, request.page, request.limit, Uuid::from_str(&request.user_id).unwrap()).await.unwrap();
+        let res_vec: Vec<WallPostPostgres> = database::db::get_posts(&self.pool.get().await.unwrap(), wallpost, request.page as i64, request.limit as i64, Uuid::from_str(&request.user_id).unwrap()).await.unwrap();
         println!("Get post response: {:?}", res_vec);
         let mut wallposts_with_meta = Vec::new();
         for res in res_vec.into_iter() {

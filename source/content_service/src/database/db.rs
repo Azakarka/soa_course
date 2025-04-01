@@ -118,8 +118,8 @@ pub async fn get_post(
 pub async fn get_posts(
     client: &Client,
     wallpost: WallPostPostgres,
-    page: i32,
-    limit: i32,
+    page: i64,
+    limit: i64,
     user_id: Uuid
 ) -> Result<Vec<WallPostPostgres>, ContentServiceError> {
     let _stmt = include_str!("../sql_queries/get_posts_paged.pgsql");

@@ -106,7 +106,9 @@ def test_get():
 def test_gets():
     create_resp, token = create_post()
     create_resp2 = create_post_with_token(token)
-    gets_resp1  = send_get_to_gateway(handler=f"/posts/gets?page=1&limit=1", token=token)
+    gets_resp1  = send_get_to_gateway(handler=f"/posts/gets?page=0&limit=1", token=token)
+    print(json.loads(gets_resp1.json()))
     assert_wallpost_content_equal(create_resp['post']['content'], json.loads(gets_resp1.json())['posts'][0]['content'])
-    gets_resp2  = send_get_to_gateway(handler=f"/posts/gets?page=2&limit=1", token=token)
+    gets_resp2  = send_get_to_gateway(handler=f"/posts/gets?page=1&limit=1", token=token)
+    print(json.loads(gets_resp2.json()))
     assert_wallpost_content_equal(create_resp2['post']['content'], json.loads(gets_resp2.json())['posts'][0]['content'])
