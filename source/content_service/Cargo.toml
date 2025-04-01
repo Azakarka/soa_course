@@ -1,33 +1,32 @@
 [package]
-name = "proxy"
+name = "content-service"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 # main framework:
-actix-web = "4"
+tokio = { version = "1.22.0", features = ["macros", "rt-multi-thread", "rt"] }
 
 # json
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.140"
 futures = "0.3"
 
-# http requests
-reqwest = { version = "0.12.12", features = ["json", "cookies"] }
+# postgres
+postgres = {version = "0.19.10", features = ["with-uuid-0_8"]}
+deadpool-postgres = { version = "0.14.1", features = ["serde"] }
+tokio-pg-mapper = "0.2.0"
+tokio-pg-mapper-derive = "0.2.0"
+tokio-postgres = {version="0.7.6", features = ["with-chrono-0_4", "with-uuid-0_8"]}
 
 # logging
 log = "*"
 env_logger = "0.11.6"
 
 # utils
-uuid = {version = "0.8.2", features = ["serde", "v4"]}
 chrono = {version = "*", features = ["serde"]}
 jsonwebtoken = "9.3.1"
-
-# open api
-schemars = { package = "apistos-schemars", version = "0.8" }
-apistos = "0.4"
-
+uuid = {version = "0.8.2", features = ["serde", "v4"]}
 
 # grpc
 tonic = "0.12.3" # Rust gRPC implementation
@@ -37,4 +36,3 @@ prost-types = "0.13.3" # Contains definitions of Protocol Buffers well-known typ
 
 [build-dependencies]
 tonic-build = "0.12.3"
-prost-build = "0.13.3"

@@ -4,20 +4,22 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y protobuf-compiler
 
+COPY proto/ ./proto/
+
 COPY Cargo.toml ./
 
-COPY proto/ proto/
 
 RUN mkdir src
 RUN echo "fn main() {println!(\"fake\")}" > src/main.rs
 RUN cargo build --release
 RUN rm -rf src/
 
+COPY build.rs .
 COPY src/ src/
 COPY build.rs build.rs
 RUN touch src/main.rs
 
-RUN cargo build --bin proxy --release
-RUN cp ./target/release/proxy /bin/proxy
+RUN cargo build --bin content-service --release
+RUN cp ./target/release/content-service /bin/content-service
 
-CMD ["/bin/proxy"]
+CMD ["/bin/content-service"]

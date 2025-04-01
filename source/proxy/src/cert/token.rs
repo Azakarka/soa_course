@@ -4,6 +4,8 @@ use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::error::ProxyError;
+
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims228 {
     iat: u64, // Time issued
@@ -11,7 +13,7 @@ struct Claims228 {
     user_uuid: Uuid,
 }
 
-pub fn validate_token(token: String, public_key: String) -> Result<Uuid, Box<dyn Error>> {
+pub fn validate_token(token: String, public_key: String) -> Result<Uuid, ProxyError> {
     println!("token in: {}", token.clone());
     let claims = decode::<Claims228>(
         &token,

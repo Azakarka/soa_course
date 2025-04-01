@@ -9,8 +9,9 @@ RUN echo "fn main() {println!(\"fake\")}" > src/main.rs
 RUN cargo build --release
 RUN rm -rf src/
 
-COPY Cargo.toml .
+
 COPY src/ src/
+RUN touch src/main.rs
 COPY cert/ cert/
 
 RUN cargo build --bin user-service --release
