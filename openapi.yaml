@@ -116,57 +116,204 @@ paths:
         - user_auth:
             - write:profile
             - read:profile
+  /content/posts:
+    post:
+      tags:
+        - content
+      summary: Create new post
+      description: Create new post with title and content
+      requestBody:
+        description: Post data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        '201':
+          description: Post created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+      security:
+        - user_auth:
+            - write:content
+
+    get:
+      tags:
+        - content
+      summary: Get paginated posts list
+      description: Returns paginated list of posts
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Items per page
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostList'
+        '400':
+          description: Invalid pagination parameters
+
+  /content/posts/{id}:
+    get:
+      tags:
+        - content
+      summary: Get post by ID
+      description: Returns single post by its ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Post ID
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: Post not found
+
+    put:
+      tags:
+        - content
+      summary: Update post
+      description: Update existing post
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Post ID
+      requestBody:
+        description: Updated post data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        '200':
+          description: Post updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid input data
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not post owner)
+        '404':
+          description: Post not found
+      security:
+        - user_auth:
+            - write:content
+
+    delete:
+      tags:
+        - content
+      summary: Delete post
+      description: Delete existing post
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Post ID
+      responses:
+        '204':
+          description: Post deleted successfully
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (not post owner)
+        '404':
+          description: Post not found
+      security:
+        - user_auth:
+            - write:content
 
 components:
   schemas:
-    RegisterMessage:
+    # ... существующие схемы остаются
+    Post:
       type: object
       required:
-        - username
-        - password
-        - email
+        - title
+        - content
       properties:
-        username:
+        id:
           type: string
-          example: cool_user1
-        password:
+          format: uuid
+          readOnly: true
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        title:
           type: string
-          example: pas!wr5d
-        email:
+          example: "My First Post"
+        content:
           type: string
+          example: "This is my first post content"
+        author_id:
+          type: string
+          format: uuid
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
 
-    LoginMessage:
-      type: object
-      required:
-        - username
-        - password
-      properties:
-        username:
-          type: string
-        password:
-          type: string
-
-    UserProfile:
+    PostList:
       type: object
       properties:
-        username:
-          type: string
-        password:
-          type: string
-        email:
-          type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-        phone_number:
-          type: string
-        birth_date:
-          type: string
-          format: date
+        total:
+          type: integer
+          example: 100
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
 
   securitySchemes:
-    user_auth:
-      type: apiKey
-      name: jwt-token
-      in: cookie
+    # ... существующая security схема остается
+tags:
+  - name: auth
+    description: About authorization
+  - name: profile
+    description: About profile management
+  - name: content
+    description: Content management operations
