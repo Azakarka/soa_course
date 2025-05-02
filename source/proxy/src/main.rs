@@ -39,7 +39,10 @@ async fn main() -> std::io::Result<()> {
                     .service(content_service::handlers::delete_post)
                     .service(content_service::handlers::update_post)
                     .service(content_service::handlers::get_post)
-                    .service(content_service::handlers::get_posts),
+                    .service(content_service::handlers::get_posts)
+                    .service(content_service::handlers::like_post)
+                    .service(content_service::handlers::add_comment)
+                    .service(content_service::handlers::get_comments),
             )
     })
     .bind(("0.0.0.0", 8081))?

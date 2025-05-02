@@ -17,6 +17,20 @@ message WallPostWithMeta {
   int64 updated_at = 5;
 }
 
+message LikePost {
+  string post_id = 1;
+  string user_id = 2;
+  int64 created_at = 3;
+}
+
+message Comment {
+  string comment_id = 1;
+  string post_id = 2;
+  string user_id = 3;
+  string text = 4;
+  int64 created_at = 5;
+}
+
 
 message CreatePostRequest {
   WallPostContent post = 1;
@@ -65,6 +79,35 @@ message GetPostsRequest {
 message GetPostsResponse {
   repeated WallPostWithMeta posts = 1;
 }
+message LikePostRequest {
+  string post_id = 1;
+  string user_id = 2;
+}
+
+message LikePostResponse {
+  LikePost like = 1;
+}
+
+message CommentPostRequest {
+  string post_id = 1;
+  string user_id = 2;
+  string text = 3;
+}
+
+message CommentPostResponse {
+  Comment comment = 1;
+}
+
+message GetCommentsRequest {
+  string post_id = 1;
+  string user_id = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message GetCommentsResponse {
+  repeated Comment comments = 1;
+}
 
 service ContentService {
   rpc CreatePost(CreatePostRequest) returns (CreatePostResponse);
@@ -72,4 +115,7 @@ service ContentService {
   rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse);
   rpc GetPost(GetPostRequest) returns (GetPostResponse);
   rpc GetPosts(GetPostsRequest) returns (GetPostsResponse);
+  rpc LikePost(LikePostRequest) returns (LikePostResponse);
+  rpc CommentPost(CommentPostRequest) returns (CommentPostResponse);
+  rpc GetComments(GetCommentsRequest) returns (GetCommentsResponse);
 }

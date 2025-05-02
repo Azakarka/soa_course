@@ -1,24 +1,21 @@
+use core::panic;
 use std::str::FromStr;
 
-use crate::database::{db, schema::UserProfile};
-use crate::{
-    cert::token::{create_token, validate_token},
-    config::UserServiceConfig,
-    error::UserServiceError,
-};
 use actix_web::{
     get,
     http::header::{HeaderName, HeaderValue},
     post, web, Error, HttpResponse,
 };
+use crate::{cert::token::{create_token, validate_token}, config::UserServiceConfig, error::UserServiceError};
+use crate::database::{
+    db,
+    schema::UserProfile,
+};
 use deadpool_postgres::{Client, Pool};
-use kafka::client::RequiredAcks;
-use kafka::producer::{Producer, Record};
 use log::debug;
-use serde::Serialize;
 use serde_json::json;
-use std::time::Duration;
 use uuid::Uuid;
+
 
 #[get("/profile/{user_uuid}")]
 pub async fn get_profile(
@@ -50,12 +47,6 @@ pub async fn update_profile(
     Ok(response)
 }
 
-#[derive(Debug, Serialize)]
-struct KafkaRegisterEvent {
-    user_uuid: Uuid,
-    created_at: i64,
-}
-
 #[post("/register")]
 pub async fn add_profile(
     user: web::Json<UserProfile>,
@@ -76,23 +67,6 @@ pub async fn add_profile(
         "UUid: {}",
         validate_token(token.clone(), config.public_key.clone()).unwrap()
     );
-
-    let kafka_event = KafkaRegisterEvent {
-        user_uuid: profile.user_uuid.unwrap(),
-        created_at: profile.created_at.unwrap().timestamp(),
-    };
-    let mut producer = Producer::from_hosts(vec!["kafka:29092".to_owned()])
-        .with_ack_timeout(Duration::from_millis(500))
-        .with_required_acks(RequiredAcks::One)
-        .create()
-        .unwrap();
-    producer
-        .send(&Record::from_value(
-            "user_register",
-            serde_json::to_string(&kafka_event).unwrap(),
-        ))
-        .unwrap();
-    println!("Send register message to kafka!");
 
     let mut response = HttpResponse::Ok().json(profile);
     response.headers_mut().append(
@@ -115,14 +89,12 @@ pub async fn login_profile(
 
     let profile = match db::login_profile(&client, user_info).await {
         Ok(profile) => profile,
-        Err(e) => match e {
-            UserServiceError::WrongPassword => {
-                return Ok(HttpResponse::Forbidden().body("Invalid password"))
+        Err(e) => {
+            match e {
+                UserServiceError::WrongPassword => return Ok(HttpResponse::Forbidden().body("Invalid password")),
+                UserServiceError::UserNotExists(name) => return Ok(HttpResponse::NotFound().body(format!("User {name} not found"))),
             }
-            UserServiceError::UserNotExists(name) => {
-                return Ok(HttpResponse::NotFound().body(format!("User {name} not found")))
-            }
-        },
+        }
     };
 
     let token = create_token(profile.user_uuid.unwrap().clone(), &config.get_ref()).unwrap();

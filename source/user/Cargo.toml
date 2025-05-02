@@ -23,6 +23,9 @@ tokio-postgres = {version="0.7.6", features = ["with-chrono-0_4", "with-uuid-0_8
 log = "*"
 env_logger = "0.11.6"
 
+# kafka
+kafka = "0.10"
+
 # utils
 chrono = {version = "*", features = ["serde"]}
 jsonwebtoken = "9.3.1"
