@@ -1,0 +1,32 @@
+[package]
+name = "user-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# main framework:
+actix-web = "4"
+
+# json
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.140"
+futures = "0.3"
+
+# postgres
+postgres = {version = "0.19.10", features = ["with-uuid-0_8"]}
+deadpool-postgres = { version = "0.14.1", features = ["serde"] }
+tokio-pg-mapper = "0.2.0"
+tokio-pg-mapper-derive = "0.2.0"
+tokio-postgres = {version="0.7.6", features = ["with-chrono-0_4", "with-uuid-0_8"]}
+
+# logging
+log = "*"
+env_logger = "0.11.6"
+
+# kafka
+kafka = "0.10"
+
+# utils
+chrono = {version = "*", features = ["serde"]}
+jsonwebtoken = "9.3.1"
+uuid = {version = "0.8.2", features = ["serde", "v4"]}

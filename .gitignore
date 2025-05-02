@@ -1,0 +1,7 @@
+source/proxy/target/*
+source/user/target/*
+source/content_service/target/*
+source/user/cert/private.pem
+source/user/cert/public.pem
+.DS_Store
+.vscode
