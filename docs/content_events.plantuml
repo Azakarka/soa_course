@@ -1,0 +1,47 @@
+@startuml tables
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+hide circle
+
+class "Post" {
+    - int post_id
+    - int author_id
+    - string text
+    - timestamp created_at
+    - timestamp last_modified
+    - string device_type
+}
+
+class "Comment" {
+    - int comment_id
+    - int post_id
+    - int author_id
+    - int reply_to_id
+    - string text
+    - timestamp created_at
+    - timestamp last_modified
+}
+
+class "Event" {
+    - int event_id
+    - string event_type
+    - int user_id
+    - int post_id
+    - timestamp created_at
+}
+
+Post -up-{ Comment: Post has many comments
+Comment --x Post: Comment has one post
+
+Post -down-{ Event: Post has many events
+Post x-- Event: Event has one post
+
+Comment -right-{ Comment: Comment has many reply comments
+
+@enduml
